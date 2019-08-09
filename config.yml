@@ -1,0 +1,5 @@
+username: test@test.com 
+password: pAsSwOrD
+token: token123456
+refresh_token: token654321
+url: http://localhost:8080
