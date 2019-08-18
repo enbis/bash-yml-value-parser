@@ -1,0 +1,8 @@
+username: test@test.com 
+password: pAsSwOrD
+token: token123456
+refresh_token: token654321
+urls: 
+  - http: http://localhost:8080
+  - nats: nats://localhost:4222
+  - mqtt: tcp://localhost:1883
