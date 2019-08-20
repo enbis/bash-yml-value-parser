@@ -14,7 +14,6 @@ elaboration()
 {
     count_lines="0"
     cat config_2.yml | while read line; do
-        #v="$(echo $line | tr --delete :)"
         count_lines=$(($count_lines+1))
         if [[ "$line" == $1* ]]; then
             read ADDR1 ADDR2 <<< $(IFS=":"; echo $line)
@@ -34,17 +33,19 @@ iteration()
     counter="0"
     i=0
     eof=0
-    cat config_2.yml | while read -r line; do
+    number_of_lines=$(cat config_2.yml | wc -l)
+    for i in $(seq 1 $number_of_lines)
+    do
         counter=$(($counter+1))
         if [[ $counter -gt $1 ]]; then
-            if [[ $line = *-* ]]; then
+            line=$(sed "${counter}q;d" config_2.yml)
+            if [[ $line = *\t* ]]; then
                 array[$i]=$line
                 i=$(($i+1))
-            else
-                echo ${array[@]}
             fi
         fi
-    done  
+    done
+    echo ${array[@]}
 }
 
 $*
