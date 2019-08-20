@@ -1,18 +1,18 @@
 #!/bin/bash
 
 _get_config_value() {
-    # IFS=':' 
-    # value=$(cat config_2.yml | grep $1)
 
-    # echo $value
+    case $1 in
+        *"."*)
+            echo "contains dot";;
+        *)
+            elaboration $1;;
+    esac
+}
 
-    # IFS=':' read -r -a array <<< "$value"
-
-    # res="$(echo -e "${array[1]}" | tr -d '[:space:]')"
-
-    # echo ${res}
+elaboration()
+{
     count_lines="0"
-
     cat config_2.yml | while read line; do
         #v="$(echo $line | tr --delete :)"
         count_lines=$(($count_lines+1))
