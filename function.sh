@@ -4,13 +4,37 @@ _get_config_value() {
 
     case $1 in
         *"."*)
-            echo "contains dot";;
+            dotprocess $1;;
         *)
-            elaboration $1;;
+            process $1;;
     esac
 }
 
-elaboration()
+dotprocess()
+{
+
+    extract=false
+    first="$(cut -d'.' -f1 <<<"$1")"
+    second="$(cut -d'.' -f2 <<<"$1")"
+    res=$(process $first)
+    
+    export IFS=" "
+    
+    for word in $res; do
+        if $extract; then 
+            echo $word
+            break
+        fi
+        if [[ "$word" == $second* ]]; then
+            extract=true
+        fi
+        
+    done
+
+    echo $res
+}
+
+process()
 {
     count_lines="0"
     cat config_2.yml | while read line; do
