@@ -1,22 +1,20 @@
 #!/bin/bash
 
 _get_config_value() {
-
-    case $1 in
+    case $2 in
         *"."*)
-            dotprocess $1;;
+            dotprocess $1 $2;;
         *)
-            process $1;;
+            process $1 $2;;
     esac
 }
 
 dotprocess()
 {
-
     extract=false
-    first="$(cut -d'.' -f1 <<<"$1")"
-    second="$(cut -d'.' -f2 <<<"$1")"
-    res=$(process $first)
+    first="$(cut -d'.' -f1 <<<"$2")"
+    second="$(cut -d'.' -f2 <<<"$2")"
+    res=$(process $1 $first)
     
     export IFS=" "
     
@@ -31,22 +29,26 @@ dotprocess()
         
     done
 
-    echo $res
 }
 
 process()
 {
     count_lines="0"
-    cat config_2.yml | while read line; do
+    IFS=''
+    cat $1 | while read line; do
         count_lines=$(($count_lines+1))
-        if [[ "$line" == $1* ]]; then
-            read ADDR1 ADDR2 <<< $(IFS=":"; echo $line)
-            if test -z $ADDR2; then
+        if [[ $line == $2* ]] && [[ $line != [[:blank:]]* ]]; then
+            
+            IFS=": " read -ra ADDR <<< $line
+
+            if test -z ${ADDR[1]}; then
+                echo $count_lines 
                 retval=$(iteration $count_lines)
                 echo $retval
             else 
-                echo ${ADDR2}
+                echo ${ADDR[1]}
             fi
+
             break
         fi
     done
@@ -54,15 +56,17 @@ process()
 
 iteration()
 {
-    counter="0"
     i=0
     eof=0
     number_of_lines=$(cat config_2.yml | wc -l)
-    for i in $(seq 1 $number_of_lines)
+    
+    echo $number_of_lines
+    for i in `seq 1 $number_of_lines` 
     do
-        counter=$(($counter+1))
-        if [[ $counter -gt $1 ]]; then
-            line=$(sed "${counter}q;d" config_2.yml)
+        echo $i
+        if [[ $i -gt $1 ]]; then
+            line=$(sed "${i}q;d" config_2.yml)
+            echo $line
             if [[ $line = *\t* ]]; then
                 array[$i]=$line
                 i=$(($i+1))
