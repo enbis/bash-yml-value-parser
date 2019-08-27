@@ -42,8 +42,7 @@ process()
             IFS=": " read -ra ADDR <<< $line
 
             if test -z ${ADDR[1]}; then
-                echo $count_lines 
-                retval=$(iteration $count_lines)
+                retval=$(iteration $count_lines $1)
                 echo $retval
             else 
                 echo ${ADDR[1]}
@@ -56,24 +55,18 @@ process()
 
 iteration()
 {
-    i=0
-    eof=0
-    number_of_lines=$(cat config_2.yml | wc -l)
-    
-    echo $number_of_lines
-    for i in `seq 1 $number_of_lines` 
-    do
-        echo $i
-        if [[ $i -gt $1 ]]; then
-            line=$(sed "${i}q;d" config_2.yml)
+    iof=$(($1+1))
+    number_of_lines=$(cat $2 | wc -l)
+
+    for (( i=$iof; i<=$number_of_lines; i++))
+    do  
+        line=$(sed "${i}q;d" $2)
+        if [[ $line != [[:blank:]]* ]]; then
+            break
+        else
             echo $line
-            if [[ $line = *\t* ]]; then
-                array[$i]=$line
-                i=$(($i+1))
-            fi
         fi
     done
-    echo ${array[@]}
 }
 
 $*
